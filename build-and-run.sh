@@ -1,20 +1,19 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+# Sobe toda a stack (bancos + serviços).
+# O build Maven acontece dentro dos containers, então só é necessário ter Docker.
+set -euo pipefail
 
-export JAVA_HOME=$(/usr/libexec/java_home -v 17)
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPT_DIR"
 
-echo "=== Building Order System ==="
-echo "Using Java: $JAVA_HOME"
+if docker compose version >/dev/null 2>&1; then
+    COMPOSE="docker compose"
+else
+    COMPOSE="docker-compose"
+fi
 
-# Limpa falhas cacheadas no .m2 para artefatos internos do projeto
-find ~/.m2/repository/com/imepac -name "*.lastUpdated" -delete 2>/dev/null || true
-
-echo ">>> Building all modules (parent + commons + services)..."
-(cd "$SCRIPT_DIR" && mvn clean install -DskipTests)
-
-echo ">>> Starting Docker Compose..."
-(cd "$SCRIPT_DIR" && docker-compose up --build -d)
+echo "=== Building and starting Order System ==="
+$COMPOSE up --build -d
 
 echo ""
 echo "=== Services are up! ==="

@@ -44,13 +44,13 @@ Antes de criar um pedido, o **order-service** consulta o **customer-service** vi
 
 ## Pré-requisitos
 
-| Ferramenta | Versão mínima |
-|---|---|
-| Java | 17 |
-| Maven | 3.8 |
-| Docker + Docker Compose | 20.x / 2.x |
+| Ferramenta | Versão mínima | Quando é necessária |
+|---|---|---|
+| Docker + Docker Compose | 20.x / 2.x | Sempre (stack completa e testes de integração) |
+| Java | 17 | Só para rodar/testar fora do Docker |
+| Maven | 3.8 | Só para rodar/testar fora do Docker |
 
-> Para rodar localmente sem Docker é necessário ter MySQL 8.0 disponível.
+> Com a Opção A o build acontece dentro dos containers: **não é preciso ter Java nem Maven instalados**.
 
 ---
 
@@ -61,12 +61,11 @@ Antes de criar um pedido, o **order-service** consulta o **customer-service** vi
 Sobe todos os serviços e bancos de dados sem nenhuma configuração adicional.
 
 ```bash
-# 1. Gerar os JARs
-mvn clean package -DskipTests
-
-# 2. Subir toda a stack
-docker-compose up --build
+docker compose up --build -d
+# ou: ./build-and-run.sh
 ```
+
+Os Dockerfiles são *multi-stage*: compilam o projeto com Maven numa imagem de build (com cache de dependências) e geram uma imagem final só com o JRE, rodando com usuário não-root.
 
 Serviços iniciados:
 
@@ -79,7 +78,7 @@ Serviços iniciados:
 
 ```bash
 # Derrubar e remover volumes
-docker-compose down -v
+docker compose down -v
 ```
 
 ---
