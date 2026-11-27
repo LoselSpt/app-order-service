@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
 
   mysql-customer:
@@ -42,10 +40,8 @@ services:
 
   customer-service:
     build:
-      context: customer-service
-      dockerfile: Dockerfile
-      args:
-        JAR_FILE: target/customer-service-1.0.0.jar
+      context: .
+      dockerfile: customer-service/Dockerfile
     container_name: customer-service
     image: imepac/customer-service:1.0.0
     ports:
@@ -65,10 +61,8 @@ services:
 
   order-service:
     build:
-      context: order-service
-      dockerfile: Dockerfile
-      args:
-        JAR_FILE: target/order-service-1.0.0.jar
+      context: .
+      dockerfile: order-service/Dockerfile
     container_name: order-service
     image: imepac/order-service:1.0.0
     ports:
