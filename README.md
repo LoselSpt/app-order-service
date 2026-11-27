@@ -1,5 +1,7 @@
 # Order System — Microsserviços com Spring Boot
 
+[![CI](https://github.com/LoselSpt/app-order-service/actions/workflows/ci.yml/badge.svg)](https://github.com/LoselSpt/app-order-service/actions/workflows/ci.yml)
+
 Sistema de gerenciamento de clientes e pedidos construído com arquitetura de microsserviços. Desenvolvido com Spring Boot 3.2, Java 17 e MySQL.
 
 ---
