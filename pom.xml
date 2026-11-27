@@ -25,10 +25,19 @@
         <logbook.version>3.8.0</logbook.version>
         <springdoc.version>2.3.0</springdoc.version>
         <lombok.version>1.18.30</lombok.version>
+        <testcontainers.version>1.21.4</testcontainers.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- Declarado antes do BOM do Spring Boot para sobrescrever a versão (compatível com Docker 29+) -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${testcontainers.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
@@ -70,6 +79,24 @@
                         <execution>
                             <goals>
                                 <goal>repackage</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <!-- Executa os testes *IT (Testcontainers) na fase integration-test -->
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>3.2.5</version>
+                    <configuration>
+                        <!-- Usa as classes compiladas, não o JAR reempacotado pelo Spring Boot (BOOT-INF/classes) -->
+                        <classesDirectory>${project.build.outputDirectory}</classesDirectory>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>integration-test</goal>
+                                <goal>verify</goal>
                             </goals>
                         </execution>
                     </executions>
