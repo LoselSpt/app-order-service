@@ -83,12 +83,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void validateStatusTransition(OrderStatus current, OrderStatus next) {
-        if (current == OrderStatus.CANCELLED || current == OrderStatus.DELIVERED) {
+        if (current.isTerminal()) {
             throw new BusinessException(
                     "Cannot change status of an order in state: " + current);
         }
-        if (next == OrderStatus.PENDING && current != OrderStatus.PENDING) {
-            throw new BusinessException("Cannot revert order to PENDING status");
+        if (!current.canTransitionTo(next)) {
+            throw new BusinessException("Invalid status transition: %s -> %s. Allowed: %s"
+                    .formatted(current, next, current.allowedTransitions()));
         }
     }
 }
