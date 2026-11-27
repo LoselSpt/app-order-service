@@ -155,12 +155,13 @@ Com os serviços rodando, acesse:
 
 ```
 PENDING → CONFIRMED → PROCESSING → SHIPPED → DELIVERED
-                                           ↘
-                                         CANCELLED
+   └──────────┴────────────┴──────────┴──→ CANCELLED
 ```
 
-- `DELIVERED` e `CANCELLED` são **estados terminais** — nenhuma transição é permitida a partir deles.
-- Não é possível **regredir** para `PENDING` após qualquer outra transição.
+- O pedido avança **uma etapa por vez**: não é possível pular etapas (ex.: `PENDING → DELIVERED`) nem voltar (ex.: `SHIPPED → CONFIRMED`).
+- Pode ser **cancelado** em qualquer etapa antes da entrega.
+- `DELIVERED` e `CANCELLED` são **estados terminais**: nenhuma transição é permitida a partir deles.
+- Uma transição inválida retorna `422 Unprocessable Entity` informando as transições permitidas.
 
 ---
 

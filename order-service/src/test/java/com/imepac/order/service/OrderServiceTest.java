@@ -198,6 +198,41 @@ class OrderServiceTest {
     }
 
     @Test
+    @DisplayName("Should throw when skipping steps (PENDING -> DELIVERED)")
+    void shouldThrowWhenSkippingSteps() {
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+        assertThatThrownBy(() -> orderService.updateStatus(1L, OrderStatus.DELIVERED))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("PENDING -> DELIVERED");
+
+        verify(orderRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should throw when moving backwards (SHIPPED -> CONFIRMED)")
+    void shouldThrowWhenMovingBackwards() {
+        order.setStatus(OrderStatus.SHIPPED);
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+        assertThatThrownBy(() -> orderService.updateStatus(1L, OrderStatus.CONFIRMED))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("SHIPPED -> CONFIRMED");
+    }
+
+    @Test
+    @DisplayName("Should allow cancelling a shipped order")
+    void shouldAllowCancellingShippedOrder() {
+        order.setStatus(OrderStatus.SHIPPED);
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        when(orderRepository.save(any(Order.class))).thenReturn(order);
+
+        OrderResponse response = orderService.updateStatus(1L, OrderStatus.CANCELLED);
+
+        assertThat(response.getStatus()).isEqualTo(OrderStatus.CANCELLED);
+    }
+
+    @Test
     @DisplayName("Should throw when reverting to PENDING status")
     void shouldThrowWhenRevertingToPending() {
         order.setStatus(OrderStatus.CONFIRMED);
