@@ -351,15 +351,17 @@ curl -s -X PATCH http://localhost:8082/api/v1/orders/1/status \
 
 Os testes de integração utilizam **Testcontainers** — é necessário ter o Docker rodando.
 
+Os testes unitários (`*Test`) rodam com o Surefire na fase `test`. Os de integração (`*IT`) rodam com o Failsafe na fase `integration-test`.
+
 ```bash
-# Rodar testes do customer-service
-mvn test -pl customer-service
-
-# Rodar testes do order-service
-mvn test -pl order-service
-
-# Rodar todos os testes
+# Só testes unitários (não precisa de Docker)
 mvn test
+
+# Unitários + integração (sobe MySQL via Testcontainers)
+mvn verify
+
+# Um módulo específico
+mvn verify -pl order-service -am
 ```
 
 | Módulo | Tipo | Cobertura |
